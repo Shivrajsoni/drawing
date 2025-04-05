@@ -1,11 +1,57 @@
 "use client";
 
 import { UserPlus, Mail, Lock, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function Home() {
+export default function signup() {
+  const router = useRouter(); 
   const [isHovered, setIsHovered] = useState(false);
+  const [formData,setFormData] = useState({
+    username:"",
+    email:"",
+    password:""
+  })
+  const [formSuccess, setFormSuccess] = useState(false)
+
+
+  const submitForm = async(e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const formURL = form.action;
+    try {
+    await fetch(formURL, {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then(() => {
+      setFormData({
+        username: "",
+        email: "",
+        password: ""
+      })
+
+      setFormSuccess(true);
+      router.push('/signin');
+    })
+    } catch (error) {
+    console.log("Error While Submitting Form",error);
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fieldName = e.target.name;
+    const fieldValue = e.target.value;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [fieldName]:fieldValue
+    }));
+  }
 
   return (
     <div className="container">
@@ -34,15 +80,18 @@ export default function Home() {
           <p className="subtitle">Join our creative community today</p>
         </div>
 
-        <form className="form">
+        <form className="form" method="POST" onSubmit={submitForm} action= "http://localhost:3003/signup">
           <div className="form-group">
             <label htmlFor="username" className="form-label">Username</label>
             <div className="input-container">
               <input
                 id="username"
+                name="username"
                 type="text"
                 className="form-input"
                 placeholder="johndoe"
+                onChange={handleChange}
+                value = {formData.username}
               />
               <UserPlus className="input-icon" size={20} />
             </div>
@@ -53,9 +102,12 @@ export default function Home() {
             <div className="input-container">
               <input
                 id="email"
+                name="email"
                 type="email"
                 className="form-input"
                 placeholder="john@example.com"
+                onChange={handleChange}
+                value = {formData.email}
               />
               <Mail className="input-icon" size={20} />
             </div>
@@ -66,9 +118,12 @@ export default function Home() {
             <div className="input-container">
               <input
                 id="password"
+                name="password"
                 type="password"
                 className="form-input"
                 placeholder="••••••••"
+                value = {formData.password}
+                onChange={handleChange}
               />
               <Lock className="input-icon" size={20} />
             </div>
