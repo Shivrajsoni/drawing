@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 export default function Dashboard(){
 
     const[formData,setFormData] = useState({
         roomSlug:"",
     })
-    const token = localStorage.getItem('token');
     const router = useRouter();
-
+    const token = localStorage.getItem('token');
+    
     const submitForm = async(e:React.FormEvent<HTMLFormElement>) =>{
+       
         e.preventDefault();
         const form = e.target as HTMLFormElement;
         const formUrl = form.action;
