@@ -230,6 +230,33 @@ app.get("/room/:slug", async (req, res) => {
     })
 })
 
+// getting all room Exist on users
+app.get("/getUserRooms",middleware,async(req,res) =>{
+    const userId = (req as CustomerRequest).userId as string;
+
+    try {
+        const rooms = await prisma.room.findMany({
+            where:{
+                adminId:userId
+            }
+        })
+        if(!rooms){
+            return res.status(203).json("No Room Existed create room first ");
+        }
+        return res.json({
+            rooms
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(402).json({
+            message:"Server Error in messages route"
+        })   
+        
+    }
+
+
+})
 
 app.listen(Number(PORT),()=>{
     console.log(`Server Running at Port : ${PORT} `)
